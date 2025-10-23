@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# (CRITICAL) Environment secrets
+.env
+
+# User-uploaded files
+uploads/
+
+# Log files
+*.log
+npm-debug.log*
