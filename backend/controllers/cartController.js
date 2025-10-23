@@ -5,7 +5,8 @@ import userModel from "../models/userModel.js";
  */
 const addToCart = async (req, res) => {
     try {
-        const { userId, itemId } = req.body;
+        const userId=req.userId
+        const {  itemId } = req.body;
 
         // 1. Create the atomic update operation
         // $inc increments 'cartData.itemId' by 1.

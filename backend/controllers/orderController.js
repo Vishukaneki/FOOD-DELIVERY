@@ -11,7 +11,7 @@ const placeOrder = async (req, res) => {
     const frontend_url = "http://localhost:5173";
     try {
         const newOrder = new orderModel({
-            userId: req.body.userId,
+            userId: req.userId,
             items: req.body.items,
             amount: req.body.amount,
             address: req.body.address,
@@ -19,7 +19,7 @@ const placeOrder = async (req, res) => {
         await newOrder.save();
         
         // Fix 1: Use $set to clear the cart (which is a Map/Object)
-        await userModel.findByIdAndUpdate(req.body.userId, { $set: { cartData: {} } });
+        await userModel.findByIdAndUpdate(req.userId, { $set: { cartData: {} } });
 
         const line_items = req.body.items.map((item) => ({
             price_data: {
@@ -73,6 +73,12 @@ const verifyOrder= async (req,res)=>{
 }
 
 const userOrders = async (req,res)=>{
-
+    try{
+        const orders = await orderModel.find({userId:req.userId});
+        res.json({success:true,data:orders});
+    }catch(error){
+        console.log(error);
+        res.json({success:false,message:"An error occurred"});
+    }
 }
 export { placeOrder ,verifyOrder, userOrders};

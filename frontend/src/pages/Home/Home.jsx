@@ -5,15 +5,18 @@ import FoodDisplay from '../../components/FoodDisplay/FoodDisplay'
 import ExploreMenu from '../../components/ExploreMenu/ExploreMenu'
 import AppDownload from '../../components/AppDownload/AppDownload'
 
-const  Home=()=> {
-  const [category , setCategory]=useState("All");
-  return(
-   <div >
-    <Header />
-   <ExploreMenu category={category} setCategory={setCategory}/>
-   <FoodDisplay category={category}/>
-   <AppDownload/>
-   </div>
+// --- FIX: Removed a non-standard whitespace character before "Home" ---
+const Home = () => {
+  const [category, setCategory] = useState("All");
+
+  return (
+    <div>
+      <Header />
+      <ExploreMenu category={category} setCategory={setCategory} />
+      <FoodDisplay category={category} />
+      <AppDownload />
+    </div>
   )
 }
+
 export default Home

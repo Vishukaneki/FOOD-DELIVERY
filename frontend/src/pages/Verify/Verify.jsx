@@ -1,32 +1,47 @@
-import React, { useContext } from 'react'
-import './Verify.css'
-import {useSearchParams} from 'react-router-dom'
-import { StoreContext } from '../../context/StoreContext'
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect } from 'react';
+import './Verify.css';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+
 const Verify = () => {
-    const [searchParams,setSearchParams] = useSearchParams();
-    const success= searchParams.get('success')
-    const orderId= searchParams.get('orderId')
-    const {URL} = useContext(StoreContext);
+    // 1. Read the status from the URL
+    const [searchParams] = useSearchParams();
+    const success = searchParams.get('success');
+    
     const navigate = useNavigate();
-    const verifyPayment = async() =>{
-        const response = await axios.post(`${URL}/api/order/verify`,{success,orderId})
-        if(response.data.success){
-            navigate('/myorders')
-        }else{
-            navigate('/')
-        }
-    }
-    useEffect(()=>{
-    verifyPayment();
-    },[])
-    console.log(success ,orderId);
-  return (
-    <div className='verify'>
-      <div className="spinner"></div>
-    </div>
-  )
+
+    // 2. Automatically redirect the user after 3 seconds
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (success === "true") {
+                navigate('/myorders');
+            } else {
+                navigate('/');
+            }
+        }, 3000); // 3-second delay
+
+        // Cleanup the timer if the component unmounts
+        return () => clearTimeout(timer);
+    }, [success, navigate]); // Dependencies
+
+    // 3. Show a spinner and a message
+    return (
+        <div className='verify'>
+            <div className="spinner"></div>
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                {success === "true" ? (
+                    <>
+                        <h2>Payment Successful!</h2>
+                        <p>Your order is being processed. Redirecting to your orders...</p>
+                    </>
+                ) : (
+                    <>
+                        <h2>Payment Failed or Cancelled.</h2>
+                        <p>Redirecting to the homepage...</p>
+                    </>
+                )}
+            </div>
+        </div>
+    );
 }
 
-export default Verify
+export default Verify;
