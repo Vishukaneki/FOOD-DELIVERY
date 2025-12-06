@@ -34,6 +34,3 @@ app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
  
-
-//mongodb+srv://VishuKaneki:<db_password>@cluster0.hpyzk8e.mongodb.net/?
-// retryWrites=true&w=majority&appName=Cluster0
