@@ -1,9 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react'; // Removed unused useEffect
 import { StoreContext } from '../../context/StoreContext';
 import './PlaceOrder.css';
 import axios from 'axios';
-// Removed unused imports: useEffect, useNavigate
-// Removed backend import: authMiddleware
+// Removed useNavigate, as it's not needed
 
 const PlaceOrder = () => {
   const { getTotalCartAmount, token, food_list, cartItems, URL } = useContext(StoreContext);
@@ -22,8 +21,8 @@ const PlaceOrder = () => {
   const placeOrder = async (event) => {
     event.preventDefault();
     let orderItems = [];
-    
-    // Fix: Used spread operator to avoid state mutation
+
+    // Fix 2: Correctly create new item objects without mutating state
     food_list.map((item) => {
       if (cartItems[item._id] > 0) {
         let itemInfo = { ...item, quantity: cartItems[item._id] };
@@ -41,14 +40,13 @@ const PlaceOrder = () => {
       let response = await axios.post(`${URL}/api/order/place`, orderData, { headers: { token: token } });
       if (response.data.success) {
         const { session_url } = response.data;
-        window.location.replace(session_url); // Correct for redirecting to external payment URL
+        window.location.replace(session_url); // Redirect to Stripe
       } else {
-        // Improved error handling
-        alert(response.data.message || "An error occurred while placing the order.");
+        alert(response.data.message || "An error occurred.");
       }
     } catch (error) {
-      console.error("Order placement failed:", error);
-      alert("Error: Could not connect to the server.");
+      console.error("Order placement error:", error);
+      alert("Error: Could not place order. Please try again.");
     }
   };
 
@@ -89,14 +87,14 @@ const PlaceOrder = () => {
             <hr />
             <div className="cart-total-details">
               <p>Delivery Fee</p>
-              <p>${2}</p> {/* Consider making this a constant if used elsewhere */}
+              <p>${2}</p>
             </div>
             <hr />
             <div className="cart-total-details">
               <b>Total</b>
               <b>${getTotalCartAmount() + 2}</b>
             </div>
-            {/* Fix: Changed button to type="submit" to trigger the form's onSubmit */}
+            {/* Fix 1: Changed button to type="submit" to trigger the form's onSubmit */}
             <button type="submit">Checkout</button>
           </div>
         </div>

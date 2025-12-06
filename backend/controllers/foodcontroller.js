@@ -44,16 +44,34 @@ const listFood= async (req, res) => {
   }
 };
 // Remove food item
+// Remove food item
 const removeFood = async (req, res) => {
-  try {
-    const food= await foodModel.findById(req.body.id);
-    fs.unlink(`uploads/${food.image}`, () => {});
-    await foodModel.findByIdAndDelete(req.body.id);
-    res.json({ success: true, message: "Food Deleted Successfully" });
-}
-  catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "An error occurred" });
-  }
+    try {
+        // 1. Find the food item to get its image filename
+        const food = await foodModel.findById(req.body.id);
+
+        // 2. CRITICAL: Check if the food item actually exists
+        if (!food) {
+            return res.status(404).json({ success: false, message: "Food item not found." });
+        }
+
+        // 3. Delete the food item from the database FIRST
+        await foodModel.findByIdAndDelete(req.body.id);
+
+        // 4. If database deletion is successful, THEN delete the image file
+        fs.unlink(`uploads/${food.image}`, (err) => {
+            if (err) {
+                // Log the error, but don't stop the response
+                // The main goal (deleting from DB) was successful
+                console.log("Error deleting file:", err);
+            }
+        });
+
+        res.json({ success: true, message: "Food Deleted Successfully" });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: "An error occurred" });
+    }
 };
 export { addFood , listFood, removeFood};
